@@ -1,3 +1,6 @@
+import { createTool } from "@mastra/core/tools";
+import { z } from "zod";
+
 /**
  * Qiita API を使用して、指定の記事内容を取得するツール
  */
@@ -15,13 +18,13 @@ export const getQiitaPostTool = createTool({
     createdAt: z.string().describe('記事の作成日時'),
     updatedAt: z.string().describe('記事の更新日時'),
   }),
-  execute: async ({ context }) => {
+  execute: async ({ context }: { context: { postId: string } }) => {
     const postData = await getQiitaPost(context.postId);
     return {
       title: postData.title,
       body: postData.body,
       author: postData.user.name ? postData.user.name : postData.user.id,
-      tags: postData.tags.map((tag) => tag.name),
+      tags: postData.tags.map((tag: { name: string }) => tag.name),
       createdAt: postData.created_at,
       updatedAt: postData.updated_at,
     };
